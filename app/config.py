@@ -79,7 +79,7 @@ class Settings(BaseSettings):
 
     # AWS region
     # us-east-1 is one of the default AWS regions
-    aws_default_region: str = "us-east-1"
+    aws_default_region: str = "ap-south-1"
 
     # Name of S3 bucket used for raw data storage
     # Example:
@@ -120,7 +120,7 @@ class Settings(BaseSettings):
 
     class Config:
 
-        # Tells Pydantic to load variables from .env file
+        # Tells Pydantic to load variables from .env file *******
         env_file = ".env"
 
         # Makes environment variable matching case-insensitive
