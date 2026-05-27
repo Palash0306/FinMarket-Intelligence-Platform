@@ -6,6 +6,12 @@ from contextlib import asynccontextmanager
 from app.config import settings
 from app.db.session import check_db_connection
 
+# ── Import routers ────────────────────────────────────────
+#
+# Each router handles one group of endpoints.
+# We import and register it here so FastAPI knows about it.
+from app.api.stocks import router as stocks_router
+
 
 # Lifespan context managers handle startup and shutdown logic seamlessly in modern FastAPI.
 @asynccontextmanager
@@ -51,6 +57,17 @@ app.add_middleware(
     allow_headers=["*"],    # Allows all custom and standard HTTP request headers.
 )
 
+
+# ── Register routers ──────────────────────────────────────
+#
+# include_router attaches all routes from stocks_router
+# to the main FastAPI app.
+#
+# After this line:
+# GET  /api/stocks       → handled by stocks_router
+# GET  /api/stocks/AAPL  → handled by stocks_router
+# POST /api/stocks       → handled by stocks_router
+app.include_router(stocks_router)
 
 @app.get("/health", tags=["System"])
 async def health_check():
