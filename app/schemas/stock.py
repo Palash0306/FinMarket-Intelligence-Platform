@@ -20,6 +20,17 @@
 #   Your API might only expose 8 of them.
 #   Schemas give you that control cleanly.
 
+# schemas/stock.py → The Menu & Order Forms
+# This is the "interface" between your app and the outside world. It has two jobs:
+
+# Order form (StockCreate/StockUpdate) — validates what a customer sends in. If someone sends an empty symbol or a name that's too long, it gets rejected here before touching the database.
+# Menu (StockResponse) — controls exactly what gets served back. Your database might have 10 columns, but you only want to show 7 to the public? Schema handles that.
+# StockBase — the common fields every stock must have (symbol, company name)
+# StockCreate — the form you fill in when adding a new stock
+# StockUpdate — the form you fill in when changing an existing stock (everything optional — you only write what you want to change)
+# StockResponse — the form the restaurant sends back to you showing what you ordered, including the receipt number (id) and timestamp
+
+
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from datetime import datetime

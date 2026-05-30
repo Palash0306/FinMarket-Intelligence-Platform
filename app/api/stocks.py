@@ -15,6 +15,22 @@
 # Each function is a "route handler" — it runs when
 # a matching HTTP request comes in.
 
+# api/stocks.py → The Waiter
+# This is what actually handles requests. When someone calls GET /api/stocks/AAPL, the waiter:
+
+# Takes the order (receives the HTTP request)
+# Checks the order form (schema validates the input)
+# Goes to the storage room (queries the database via the model)
+# Brings back only what's on the menu (schema shapes the response)
+
+
+# get_stocks — the waiter who brings you the full menu of what is available
+# get_stock — the waiter who brings you details on one specific dish
+# create_stock — the waiter who takes your new order to the kitchen
+# update_stock — the waiter who goes back and changes something about your order
+# delete_stock — the waiter who marks your order as cancelled (but keeps the record — the kitchen still knows it was ordered)
+# HTTP Request → api/stocks.py → schemas/stock.py (validate) → models/stock.py (DB) → schemas/stock.py (format) → HTTP Response
+
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import Optional

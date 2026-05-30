@@ -25,6 +25,13 @@
 # Boolean:      SQL BOOLEAN type — true/false
 # Text:         SQL TEXT type — unlimited length text
 # Index:        creates a DB index for faster queries
+
+
+# models/stock.py → The Storage Room
+# This is the blueprint of your actual database table. It tells PostgreSQL: "create a table called stocks with these exact columns — symbol, company name, sector, etc."
+# It's purely about how data is stored on disk.
+
+
 from sqlalchemy import Column, Integer, String, Boolean, Text, Index
 
 # Mapped:       type hint for ORM mapped columns (SQLAlchemy 2.0)

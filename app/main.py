@@ -1,98 +1,152 @@
 # path: app/main.py
 
+# =========================================================
+# FINMARKET INTELLIGENCE — FASTAPI APPLICATION
+# =========================================================
+#
+# This is the fully updated main.py with:
+# - Error handling middleware
+# - Request timing middleware
+# - Structured logging
+# - CloudWatch integration
+# - All routers registered
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from contextlib import asynccontextmanager
+
 from app.config import settings
 from app.db.session import check_db_connection
+from app.utils.logger import get_logger
+from app.utils.cloudwatch import setup_cloudwatch_logging
+
+# ── Import error handlers ─────────────────────────────────
+from app.middleware.error_handler import (
+    request_middleware,
+    http_exception_handler,
+    validation_exception_handler
+)
 
 # ── Import routers ────────────────────────────────────────
-#
-# Each router handles one group of endpoints.
-# We import and register it here so FastAPI knows about it.
 from app.api.stocks import router as stocks_router
 
+# ── Module logger ─────────────────────────────────────────
+#
+# __name__ here is "app.main" — useful for filtering logs
+logger = get_logger(__name__)
 
-# Lifespan context managers handle startup and shutdown logic seamlessly in modern FastAPI.
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Runs on startup and shutdown.
-    Startup: verify DB connection before accepting requests.
-    Shutdown: clean up resources.
+    Runs startup and shutdown logic.
+
+    Startup order matters:
+    1. CloudWatch first — so all startup logs are captured
+    2. DB check — verify RDS is reachable
+    3. Ready to serve requests
     """
-    # Startup Phase: Executes before the application begins accepting incoming network requests.
-    print(f"Starting {settings.app_name}...")
+
+    # ── Startup ───────────────────────────────────────────
+    logger.info(
+        "app_starting",
+        extra={
+            "app_name": settings.app_name,
+            "env": settings.app_env,
+            "region": settings.aws_default_region
+        }
+    )
+
+    # Enable CloudWatch in non-dev environments
+    setup_cloudwatch_logging()
+
+    # Check RDS connection
     db_ok = check_db_connection()
     if db_ok:
-        print("Database connection: OK")
+        logger.info("database_connected", extra={"host": settings.database_url.split("@")[-1]})
     else:
-        # Fails softly with a warning; prevents the server from crashing immediately if the DB is temporarily down.
-        print("WARNING: Database connection failed — check your RDS endpoint")
-    
-    # The yield statement yields control back to FastAPI. The app runs while paused here.
+        logger.error("database_unreachable")
+
     yield
-    
-    # Shutdown Phase: Executes when the server process receives a termination signal (e.g., SIGTERM).
-    print("Shutting down...")
+
+    # ── Shutdown ──────────────────────────────────────────
+    logger.info("app_shutting_down")
 
 
-# Initialize the core FastAPI application instance with metadata and configuration hooks.
+# ── Create FastAPI app ────────────────────────────────────
 app = FastAPI(
     title=settings.app_name,
     description="Real-time financial intelligence platform with ML + AI",
     version="0.1.0",
-    docs_url="/docs",       # Swagger UI at /docs
-    redoc_url="/redoc",     # ReDoc UI at /redoc
-    lifespan=lifespan       # Registers the startup/shutdown lifecycle hook defined above.
+    docs_url="/docs",
+    redoc_url="/redoc",
+    lifespan=lifespan
 )
 
-# CORS (Cross-Origin Resource Sharing) middleware handles security restrictions for web browsers.
-# This prevents browsers from blocking requests originating from different domains (e.g., your Streamlit UI).
+# ── Register exception handlers ───────────────────────────
+#
+# These run for every request that raises these exceptions.
+# Order doesn't matter here — each handles a different type.
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+
+# ── Register middleware ───────────────────────────────────
+#
+# Middleware order DOES matter — they stack like layers.
+# Last added = outermost layer (runs first on request,
+#                               last on response)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],    # Wildcard allows all origins; change to a specific whitelist for production environments.
-    allow_credentials=True, # Permits HTTP cookies and authentication headers to be passed across origins.
-    allow_methods=["*"],    # Allows all HTTP methods (GET, POST, PUT, DELETE, etc.).
-    allow_headers=["*"],    # Allows all custom and standard HTTP request headers.
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
+# Request timing + ID middleware
+# Wraps every request with timing and a unique ID
+app.middleware("http")(request_middleware)
 
 # ── Register routers ──────────────────────────────────────
-#
-# include_router attaches all routes from stocks_router
-# to the main FastAPI app.
-#
-# After this line:
-# GET  /api/stocks       → handled by stocks_router
-# GET  /api/stocks/AAPL  → handled by stocks_router
-# POST /api/stocks       → handled by stocks_router
 app.include_router(stocks_router)
 
+
+# ── System endpoints ──────────────────────────────────────
 @app.get("/health", tags=["System"])
 async def health_check():
     """
     Health check endpoint.
-    Load balancers and monitoring tools ping this to verify the app is alive.
+
+    Called by:
+    - Load balancers (to know if app is alive)
+    - Monitoring tools (to track uptime)
+    - Your own sanity (to verify RDS is connected)
     """
-    # Dynamic runtime check: Query the database status on every ping rather than caching it.
     db_status = check_db_connection()
-    
-    # Returns a 200 OK status code but flags 'degraded' if the app is up but missing its database link.
+
+    logger.info(
+        "health_check",
+        extra={"db_status": "connected" if db_status else "unreachable"}
+    )
+
     return {
         "status": "ok" if db_status else "degraded",
         "app": settings.app_name,
+        "version": "0.1.0",
         "env": settings.app_env,
+        "region": settings.aws_default_region,
         "database": "connected" if db_status else "unreachable"
     }
 
 
 @app.get("/", tags=["System"])
 async def root():
-    # Simple landing endpoint providing immediate API confirmation and a quick link to the auto-generated documentation.
     return {
         "message": f"Welcome to {settings.app_name}",
-        "docs": "/docs"
+        "docs": "/docs",
+        "health": "/health"
     }
 
 

@@ -52,7 +52,7 @@ class Base(DeclarativeBase):
     Root base class for all SQLAlchemy ORM models.
 
     Any table/model in the application must inherit from this.
-
+    
     SQLAlchemy uses this class to:
     - register tables
     - map Python objects to DB tables
