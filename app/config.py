@@ -86,7 +86,7 @@ class Settings(BaseSettings):
     # scraped CSVs
     # raw JSON files
     # uploaded datasets
-    s3_bucket_name: str = "finmarket-raw-data"
+    s3_bucket_name: str = "finmarket-raw-data-palash"
 
 
     # =========================
@@ -100,6 +100,33 @@ class Settings(BaseSettings):
     # API key for News API
     # Used to fetch financial news/articles
     news_api_key: str = ""
+    
+    
+    # ── Phase 2 additions ─────────────────────────────────
+
+    # Kafka
+    # Where Kafka is running — service name inside Docker
+    kafka_bootstrap_servers: str = "kafka:9092"
+
+    # ClickHouse
+    clickhouse_host: str = "clickhouse"
+    clickhouse_port: int = 9000
+    clickhouse_db: str = "market_data"
+    clickhouse_user: str = "finmarket"
+    clickhouse_password: str = "finmarket_ch_pass"
+
+    # External APIs
+    news_api_key: str = ""
+    reddit_client_id: str = ""
+    reddit_client_secret: str = ""
+    reddit_user_agent: str = "finmarket-bot/1.0"
+
+    # Celery
+    # Uses Redis as the broker (task queue storage)
+    celery_broker_url: str = "redis://redis:6379/0"
+    celery_result_backend: str = "redis://redis:6379/1"
+
+   
 
 
     # =========================
@@ -163,3 +190,5 @@ def get_settings() -> Settings:
 # settings.debug
 # etc.
 settings = get_settings()
+
+

@@ -44,7 +44,12 @@ from app.models.base import Base
 # Example for later:
 # from app.models.stock import Stock
 # from app.models.news import NewsArticle
+# Phase 1:
+from app.models.stock import Stock
 
+# Phase 2 Day 2 — new:
+from app.models.news import NewsArticle          # → news_articles table
+from app.models.stocktwits_post import StocktwitsPost  # → stocktwits_posts table
 
 # ── Alembic Config object ─────────────────────────────────
 #

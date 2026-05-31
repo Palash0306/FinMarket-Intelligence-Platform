@@ -1,17 +1,19 @@
 # path: docker-compose.yml
+# Replace your entire docker-compose.yml with this
 
 version: "3.9"
 
 services:
 
-  # ── FastAPI Application ──────────────────────────────
+  # ── FastAPI Application ─────────────────────────────────
+  # Your existing API — unchanged from Phase 1
   api:
     build: .
     container_name: finmarket_api
     ports:
-      - "8000:8000"         # localhost:8000 → container:8000
+      - "8000:8000"
     volumes:
-      - .:/app              # live reload — code changes reflect immediately
+      - .:/app
     env_file:
       - .env
     depends_on:
@@ -20,10 +22,73 @@ services:
       redis:
         condition: service_healthy
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - finmarket_network
 
-  # ── PostgreSQL (local dev only — RDS used in production) ──
+  # ── Celery Worker ───────────────────────────────────────
+  # What it does: runs background tasks (fetching prices, news)
+  # Think of it as: a worker bee that does jobs in the background
+  # while the API bee handles web requests
+  celery_worker:
+    build: .
+    container_name: finmarket_celery_worker
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    # This command starts Celery in worker mode
+    # -A app.tasks.celery_app = where your Celery config lives
+    # --loglevel=info = show INFO level logs
+    command: celery -A app.tasks.celery_app worker --loglevel=info
+    networks:
+      - finmarket_network
+
+  # ── Celery Beat Scheduler ───────────────────────────────
+  # What it does: the clock that triggers tasks on schedule
+  # Think of it as: an alarm clock
+  # celery worker = the person who wakes up when the alarm rings
+  # celery beat   = the alarm clock itself
+  celery_beat:
+    build: .
+    container_name: finmarket_celery_beat
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: celery -A app.tasks.celery_app beat --loglevel=info
+    networks:
+      - finmarket_network
+
+  # ── Flower — Celery Monitoring UI ──────────────────────
+  # What it does: web dashboard showing all Celery tasks
+  # Where to see it: http://localhost:5555
+  # Think of it as: a control panel showing which tasks
+  # are running, queued, succeeded, or failed
+  flower:
+    build: .
+    container_name: finmarket_flower
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: celery -A app.tasks.celery_app flower --port=5555
+    networks:
+      - finmarket_network
+
+  # ── Local PostgreSQL ────────────────────────────────────
+  # Still here for local dev fallback
+  # Your .env points to RDS so this is ignored in practice
   postgres:
-    image: pgvector/pgvector:pg16    # includes pgvector extension
+    image: pgvector/pgvector:pg16
     container_name: finmarket_postgres
     ports:
       - "5432:5432"
@@ -38,8 +103,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - finmarket_network
 
-  # ── Redis (local dev only — ElastiCache used in production) ──
+  # ── Redis ───────────────────────────────────────────────
+  # What it does: Celery's memory — stores task queue
+  # Think of it as: a whiteboard Celery uses to track
+  # which tasks are waiting, running, and done
   redis:
     image: redis:7-alpine
     container_name: finmarket_redis
@@ -52,8 +122,83 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - finmarket_network
 
-  # ── Adminer — free DB GUI (localhost:8080) ────────────
+  # ── Kafka ───────────────────────────────────────────────
+  # What it does: message queue between fetchers and storage
+  # Think of it as: a postal sorting office
+  # Fetchers drop messages here, consumers pick them up
+  # KRaft mode = no Zookeeper needed (simpler, modern setup)
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: finmarket_kafka
+    ports:
+      - "9092:9092"
+    environment:
+      # KRaft mode settings — Kafka manages itself, no Zookeeper
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      CLUSTER_ID: "UIXZU8t3Rpa8-KLp-XkrbQ"
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - finmarket_network
+
+  # ── Kafka UI ────────────────────────────────────────────
+  # What it does: web dashboard to see Kafka messages
+  # Where to see it: http://localhost:8090
+  # Think of it as: a window into the postal sorting office
+  # You can see every message in every topic
+  kafka_ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: finmarket_kafka_ui
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: finmarket
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - finmarket_network
+
+  # ── ClickHouse ──────────────────────────────────────────
+  # What it does: stores price time-series data
+  # Think of it as: a super-fast spreadsheet that can
+  # answer "average price per hour for 90 days" instantly
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.8
+    container_name: finmarket_clickhouse
+    ports:
+      - "8123:8123"   # HTTP interface
+      - "9000:9000"   # Native interface
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    environment:
+      CLICKHOUSE_DB: market_data
+      CLICKHOUSE_USER: finmarket
+      CLICKHOUSE_PASSWORD: finmarket_ch_pass
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - finmarket_network
+
+  # ── Adminer ─────────────────────────────────────────────
   adminer:
     image: adminer:latest
     container_name: finmarket_adminer
@@ -61,7 +206,14 @@ services:
       - "8080:8080"
     depends_on:
       - postgres
+    networks:
+      - finmarket_network
 
 volumes:
   postgres_data:
   redis_data:
+  clickhouse_data:     # ← new
+
+networks:
+  finmarket_network:
+    driver: bridge

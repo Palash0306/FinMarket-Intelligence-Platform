@@ -22,6 +22,11 @@ from app.db.session import check_db_connection
 from app.utils.logger import get_logger
 from app.utils.cloudwatch import setup_cloudwatch_logging
 
+
+from app.db.clickhouse import init_clickhouse_tables, check_clickhouse_connection
+from app.consumers.price_consumer import price_consumer
+from app.consumers.news_consumer import news_consumer
+from app.consumers.sentiment_consumer import sentiment_consumer
 # ── Import error handlers ─────────────────────────────────
 from app.middleware.error_handler import (
     request_middleware,
@@ -37,8 +42,8 @@ from app.api.stocks import router as stocks_router
 # __name__ here is "app.main" — useful for filtering logs
 logger = get_logger(__name__)
 
-
 @asynccontextmanager
+
 async def lifespan(app: FastAPI):
     """
     Runs startup and shutdown logic.
@@ -50,28 +55,73 @@ async def lifespan(app: FastAPI):
     """
 
     # ── Startup ───────────────────────────────────────────
-    logger.info(
-        "app_starting",
-        extra={
-            "app_name": settings.app_name,
-            "env": settings.app_env,
-            "region": settings.aws_default_region
-        }
-    )
 
-    # Enable CloudWatch in non-dev environments
+    logger.info("app_starting", extra={"app_name": settings.app_name})
+
     setup_cloudwatch_logging()
 
-    # Check RDS connection
+    # Phase 1 — DB check
+
     db_ok = check_db_connection()
+
     if db_ok:
-        logger.info("database_connected", extra={"host": settings.database_url.split("@")[-1]})
+
+        logger.info("postgres_connected")
+
     else:
-        logger.error("database_unreachable")
+
+        logger.error("postgres_unreachable")
+
+    # Phase 2 — ClickHouse setup
+
+    try:
+
+        init_clickhouse_tables()
+
+        logger.info("clickhouse_ready")
+
+    except Exception as e:
+
+        logger.warning(f"clickhouse_not_ready: {e}")
+
+    # Phase 2 — Start Kafka consumer in background
+
+    try:
+        price_consumer.start()
+        logger.info("price_consumer_started")
+
+    except Exception as e:
+
+        logger.warning(f"price_consumer_failed: {e}")
+    # ── Start news consumer ───────────────────────────────
+    #
+    # Listens to Kafka "news.raw"
+    # Writes to RDS news_articles table
+    try:
+        news_consumer.start()
+        logger.info("news_consumer_started")
+    except Exception as e:
+        logger.warning(f"news_consumer_failed: {e}")
+
+    # ── Start sentiment consumer ──────────────────────────
+    #
+    # Listens to Kafka "sentiment.raw"
+    # Writes to RDS stocktwits_posts table
+    # sentiment_score already filled — no Phase 3 needed
+    try:
+        sentiment_consumer.start()
+        logger.info("sentiment_consumer_started")
+    except Exception as e:
+        logger.warning(f"sentiment_consumer_failed: {e}")
 
     yield
 
     # ── Shutdown ──────────────────────────────────────────
+
+    price_consumer.stop()
+    news_consumer.stop()
+    sentiment_consumer.stop()
+
     logger.info("app_shutting_down")
 
 

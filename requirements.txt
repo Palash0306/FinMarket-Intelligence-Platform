@@ -28,3 +28,28 @@ boto3==1.34.0
 pytest==8.2.0
 pytest-asyncio==0.23.7
 httpx==0.27.0
+
+
+
+# ── Phase 2 additions ────────────────────────────────────
+
+# Data fetching
+yfinance==0.2.38           # stock price data — no API key needed
+newsapi-python==0.2.7      # NewsAPI client
+feedparser==6.0.11         # RSS feed parser
+praw==7.7.1                # Reddit API
+
+# Kafka
+confluent-kafka==2.3.0     # Kafka producer and consumer
+
+# ClickHouse
+clickhouse-driver==0.2.7   # ClickHouse Python client
+
+# Celery task queue
+celery==5.4.0              # already in requirements — verify it's there
+redis==5.0.4               # already in requirements — verify it's there
+flower==2.0.1              # Celery monitoring UI
+
+# Data processing
+pandas==2.2.2              # data manipulation
+numpy==1.26.4              # numerical operations
