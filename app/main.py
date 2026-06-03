@@ -10,7 +10,7 @@
 # - Structured logging
 # - CloudWatch integration
 # - All routers registered
-
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -35,7 +35,18 @@ from app.middleware.error_handler import (
 )
 
 # ── Import routers ────────────────────────────────────────
+# Phase 1
 from app.api.stocks import router as stocks_router
+
+# Phase 2 Day 3 — new
+# prices_router → handles /api/prices/* endpoints
+# reads from ClickHouse ohlcv table
+from app.api.prices import router as prices_router
+
+# news_router → handles /api/news/* and /api/news/*/sentiment
+# reads from RDS news_articles + stocktwits_posts tables
+from app.api.news import router as news_router
+
 
 # ── Module logger ─────────────────────────────────────────
 #
@@ -53,6 +64,12 @@ async def lifespan(app: FastAPI):
     2. DB check — verify RDS is reachable
     3. Ready to serve requests
     """
+    
+    # ── Check if running in test mode ────────────────────
+    #
+    # conftest.py sets TESTING=true before importing the app.
+    # We use this to skip anything that requires Docker.
+    is_testing = os.environ.get("TESTING", "false").lower() == "true"
 
     # ── Startup ───────────────────────────────────────────
 
@@ -86,41 +103,37 @@ async def lifespan(app: FastAPI):
 
     # Phase 2 — Start Kafka consumer in background
 
-    try:
-        price_consumer.start()
-        logger.info("price_consumer_started")
+    if not is_testing:
+        try:
+            price_consumer.start()
+            logger.info("price_consumer_started")
+        except Exception as e:
+            logger.warning(f"price_consumer_failed: {e}")
 
-    except Exception as e:
+        try:
+            news_consumer.start()
+            logger.info("news_consumer_started")
+        except Exception as e:
+            logger.warning(f"news_consumer_failed: {e}")
 
-        logger.warning(f"price_consumer_failed: {e}")
-    # ── Start news consumer ───────────────────────────────
-    #
-    # Listens to Kafka "news.raw"
-    # Writes to RDS news_articles table
-    try:
-        news_consumer.start()
-        logger.info("news_consumer_started")
-    except Exception as e:
-        logger.warning(f"news_consumer_failed: {e}")
+        try:
+            sentiment_consumer.start()
+            logger.info("sentiment_consumer_started")
+        except Exception as e:
+            logger.warning(f"sentiment_consumer_failed: {e}")
+    else:
+        logger.info("consumers_skipped_in_test_mode")
 
-    # ── Start sentiment consumer ──────────────────────────
-    #
-    # Listens to Kafka "sentiment.raw"
-    # Writes to RDS stocktwits_posts table
-    # sentiment_score already filled — no Phase 3 needed
-    try:
-        sentiment_consumer.start()
-        logger.info("sentiment_consumer_started")
-    except Exception as e:
-        logger.warning(f"sentiment_consumer_failed: {e}")
+    logger.info("app_ready")
 
     yield
 
     # ── Shutdown ──────────────────────────────────────────
-
-    price_consumer.stop()
-    news_consumer.stop()
-    sentiment_consumer.stop()
+    if not is_testing:
+        sentiment_consumer.stop()
+        news_consumer.stop()
+        price_consumer.stop()
+    
 
     logger.info("app_shutting_down")
 
@@ -161,6 +174,8 @@ app.middleware("http")(request_middleware)
 
 # ── Register routers ──────────────────────────────────────
 app.include_router(stocks_router)
+app.include_router(prices_router)   # ← add this
+app.include_router(news_router)     # ← add this
 
 
 # ── System endpoints ──────────────────────────────────────

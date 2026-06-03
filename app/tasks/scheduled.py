@@ -116,6 +116,9 @@ def fetch_news_articles():
     return {"articles_published": count}
 
 
+# path: app/tasks/scheduled.py
+# Find fetch_stocktwits_sentiment and replace with:
+
 @celery_app.task(
     name="app.tasks.scheduled.fetch_stocktwits_sentiment",
     autoretry_for=(Exception,),
@@ -125,41 +128,29 @@ def fetch_news_articles():
 def fetch_stocktwits_sentiment():
     """
     Runs every hour.
+    Now uses yfinance news + Alpha Vantage instead of
+    Stocktwits (which is Cloudflare blocked).
 
-    Full connection chain:
-    ┌──────────────────────────────────────────────────┐
-    │ Celery beat triggers this task                   │
-    │       ↓                                          │
-    │ stocktwits_fetcher.fetch_and_publish()           │
-    │       ↓ reads                                    │
-    │ RDS stocks table (Phase 1)                       │
-    │       ↓ fetches from                             │
-    │ Stocktwits API (free, NO API KEY needed)         │
-    │ GET /streams/symbol/AAPL.json per symbol         │
-    │       ↓ converts                                 │
-    │ "Bullish" → +1.0, "Bearish" → -1.0              │
-    │       ↓ archives to                              │
-    │ S3 sentiment/date/batch.json                     │
-    │       ↓ publishes to                             │
-    │ Kafka "sentiment.raw"                            │
-    │       ↓ consumed by                              │
-    │ sentiment_consumer.py                            │
-    │       ↓ deduplicates by stocktwits_id            │
-    │       ↓ writes to                                │
-    │ RDS stocktwits_posts table                       │
-    │ (sentiment_score ALREADY filled here)            │
-    │       ↓ read by Phase 3                          │
-    │ RDS news_articles ──┐                            │
-    │                     ├→ sentiment_aggregator.py   │
-    │ RDS stocktwits ─────┘  AVG(score) per ticker/day │
-    │                         → ClickHouse daily_sentiment│
-    └──────────────────────────────────────────────────┘
+    Connection chain:
+    Celery beat
+        ↓
+    sentiment_fetcher.fetch_and_publish()
+        ↓ reads symbols from RDS stocks table
+        ↓ fetches from yfinance news (free, no key)
+        ↓ fetches from Alpha Vantage news (free, 25/day)
+        ↓ scores headlines as bullish/bearish/neutral
+        ↓ archives to S3
+        ↓ publishes to Kafka "sentiment.raw"
+        ↓
+    sentiment_consumer.py
+        ↓ writes to RDS stocktwits_posts table
     """
-    from app.ingestion.stocktwits_fetcher import stocktwits_fetcher
-    logger.info("task_started: fetch_stocktwits_sentiment")
-    count = stocktwits_fetcher.fetch_and_publish()
+    # Import new fetcher instead of stocktwits_fetcher
+    from app.ingestion.sentiment_fetcher import sentiment_fetcher
+    logger.info("task_started: fetch_sentiment")
+    count = sentiment_fetcher.fetch_and_publish()
     logger.info(
-        "task_completed: fetch_stocktwits_sentiment",
+        "task_completed: fetch_sentiment",
         extra={"messages_published": count}
     )
     return {"messages_published": count}
