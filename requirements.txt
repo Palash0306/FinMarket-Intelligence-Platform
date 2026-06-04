@@ -34,7 +34,7 @@ httpx==0.27.0
 # ── Phase 2 additions ────────────────────────────────────
 
 # Data fetching
-yfinance==0.2.38           # stock price data — no API key needed
+yfinance>=1.4.1   # stock price data — no API key needed
 newsapi-python==0.2.7      # NewsAPI client
 feedparser==6.0.11         # RSS feed parser
 praw==7.7.1                # Reddit API

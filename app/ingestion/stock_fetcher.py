@@ -92,11 +92,15 @@ class StockFetcher:
         """
         Fetches current price data for all active stocks.
 
-        Returns a dict of symbol → price data.
+        Uses yfinance 1.4.1+ which requires different
+        column access than the old 0.2.x version.
 
-        yfinance.download() pulls data from Yahoo Finance.
-        interval="1m" = 1-minute candles
-        period="1d"   = last 1 day of data
+        Connection chain:
+        RDS stocks table → symbols list
+        yfinance → Yahoo Finance prices
+        → returns dict of symbol → price data
+        → fetch_and_publish() saves to S3 + Kafka
+        → price_consumer.py writes to ClickHouse ohlcv
         """
         symbols = self.get_active_symbols()
 
@@ -113,15 +117,27 @@ class StockFetcher:
 
         for symbol in symbols:
             try:
-                # ── Download from Yahoo Finance ───────────
+                # ── Fetch using new yfinance 1.4.1 API ───────
                 #
-                # yf.Ticker(symbol) creates a ticker object
-                # .history() downloads historical price data
-                #
-                # period="1d" = last trading day
-                # interval="5m" = 5-minute candles
+                # Ticker.history() still works in 1.4.1
+                # but column names changed slightly.
+                # We use period="1d" for last trading day
+                # interval="5m" for 5-minute candles
                 ticker = yf.Ticker(symbol)
-                hist = ticker.history(period="1d", interval="5m")
+                hist = ticker.history(
+                    period="1d",
+                    interval="5m",
+                    auto_adjust=True  # adjust for splits/dividends
+                )
+
+                if hist.empty:
+                    # Try with longer period as fallback
+                    # (market might be closed today)
+                    hist = ticker.history(
+                        period="5d",
+                        interval="1d",
+                        auto_adjust=True
+                    )
 
                 if hist.empty:
                     logger.warning(
@@ -130,23 +146,41 @@ class StockFetcher:
                     )
                     continue
 
-                # ── Get the latest candle ─────────────────
-                #
-                # iloc[-1] = last row (most recent price)
-                # We convert to dict for JSON serialisation
+                # ── Get latest row ────────────────────────────
                 latest = hist.iloc[-1]
+
+                # ── Safely extract float values ───────────────
+                #
+                # yfinance 1.4.1 sometimes returns Series
+                # instead of scalar values. .item() converts
+                # any numpy type to a plain Python float.
+                def safe_float(val) -> float:
+                    try:
+                        if hasattr(val, 'item'):
+                            return round(float(val.item()), 4)
+                        return round(float(val), 4)
+                    except Exception:
+                        return 0.0
+
                 price_data = {
-                    "symbol": symbol,
+                    "symbol":    symbol,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "open": round(float(latest["Open"]), 4),
-                    "high": round(float(latest["High"]), 4),
-                    "low": round(float(latest["Low"]), 4),
-                    "close": round(float(latest["Close"]), 4),
-                    "volume": float(latest["Volume"]),
-                    "source": "yfinance"
+                    "open":      safe_float(latest["Open"]),
+                    "high":      safe_float(latest["High"]),
+                    "low":       safe_float(latest["Low"]),
+                    "close":     safe_float(latest["Close"]),
+                    "volume":    safe_float(latest["Volume"]),
+                    "source":    "yfinance"
                 }
 
                 results[symbol] = price_data
+                logger.info(
+                    "price_fetched",
+                    extra={
+                        "symbol": symbol,
+                        "close": price_data["close"]
+                    }
+                )
 
             except Exception as e:
                 logger.error(
