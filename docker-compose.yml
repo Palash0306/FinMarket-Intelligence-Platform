@@ -208,7 +208,26 @@ services:
       - postgres
     networks:
       - finmarket_network
-
+      
+  # ── ML Flow ─────────────────────────────────────────────
+  mlflow:
+    image: python:3.11-slim
+    container_name: finmarket_mlflow
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./mlruns:/mlruns
+      - .:/app
+    working_dir: /app
+    command: >
+      sh -c "pip install mlflow==2.13.0 -q &&
+             mlflow server
+             --host 0.0.0.0
+             --port 5001
+             --backend-store-uri /mlruns
+             --default-artifact-root /mlruns"
+    networks:
+      - finmarket_network
 volumes:
   postgres_data:
   redis_data:
@@ -217,3 +236,6 @@ volumes:
 networks:
   finmarket_network:
     driver: bridge
+
+
+  

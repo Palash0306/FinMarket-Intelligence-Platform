@@ -53,3 +53,21 @@ flower==2.0.1              # Celery monitoring UI
 # Data processing
 pandas==2.2.2              # data manipulation
 numpy==1.26.4              # numerical operations
+
+# ── ML Models ────────────────────────────────────────────
+prophet==1.1.5
+xgboost==2.0.3
+statsmodels==0.14.2
+scikit-learn==1.4.2
+
+# ── NLP ──────────────────────────────────────────────────
+spacy==3.7.5
+sentence-transformers==2.7.0
+
+# ── ML Tracking ──────────────────────────────────────────
+mlflow==2.13.0
+
+# ── Additional ───────────────────────────────────────────
+joblib==1.4.2
+scipy==1.13.0
+typer==0.12.5

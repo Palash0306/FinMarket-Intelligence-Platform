@@ -51,6 +51,10 @@ from app.models.stock import Stock
 from app.models.news import NewsArticle          # → news_articles table
 from app.models.stocktwits_post import StocktwitsPost  # → stocktwits_posts table
 
+
+# Phase 3 
+from app.models.forecast import Forecast
+from app.models.anomaly import Anomaly
 # ── Alembic Config object ─────────────────────────────────
 #
 # config gives access to values in alembic.ini

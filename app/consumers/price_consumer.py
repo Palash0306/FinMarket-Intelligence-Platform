@@ -24,6 +24,7 @@
 
 import json
 import threading
+from datetime import datetime, timezone
 from confluent_kafka import Consumer, KafkaError
 from app.db.clickhouse import get_clickhouse_client
 from app.config import settings
@@ -62,20 +63,36 @@ class PriceConsumer:
         """
         Writes one price record to ClickHouse.
 
-        Called for every message received from Kafka.
+        Fix: timestamp comes from Kafka as an ISO string.
+        ClickHouse driver needs a Python datetime object.
+        We convert it here before inserting.
 
-        In plain English: takes the price envelope
-        from Kafka, opens it, and files the price
-        in the ClickHouse spreadsheet.
+        Connects to:
+        Kafka "market.prices" → this method → ClickHouse ohlcv
         """
         client = get_clickhouse_client()
 
-        # ── Insert into ClickHouse ────────────────────────
+        # ── Convert timestamp string → datetime object ────────
         #
-        # client.execute() runs a ClickHouse SQL query.
+        # stock_fetcher.py stores timestamp as ISO string:
+        # "2026-06-04T08:45:07.729779+00:00"
         #
-        # We use INSERT INTO ... VALUES to add one row.
-        # ClickHouse batches these internally for performance.
+        # ClickHouse driver needs a Python datetime object.
+        # fromisoformat() parses the ISO string back to datetime.
+        raw_ts = price_data["timestamp"]
+
+        if isinstance(raw_ts, str):
+            # Parse ISO format string to datetime
+            timestamp = datetime.fromisoformat(raw_ts)
+        else:
+            # Already a datetime — use as is
+            timestamp = raw_ts
+
+        # Make sure it has timezone info
+        if timestamp.tzinfo is None:
+            timestamp = timestamp.replace(tzinfo=timezone.utc)
+
+        # ── Insert into ClickHouse ────────────────────────────
         client.execute(
             """
             INSERT INTO ohlcv
@@ -84,12 +101,12 @@ class PriceConsumer:
             """,
             [(
                 price_data["symbol"],
-                price_data["timestamp"],
-                price_data["open"],
-                price_data["high"],
-                price_data["low"],
-                price_data["close"],
-                price_data["volume"],
+                timestamp,              # ← now a proper datetime
+                float(price_data["open"]),
+                float(price_data["high"]),
+                float(price_data["low"]),
+                float(price_data["close"]),
+                float(price_data["volume"]),
                 price_data.get("source", "yfinance")
             )]
         )
@@ -98,7 +115,7 @@ class PriceConsumer:
             "price_stored",
             extra={
                 "symbol": price_data["symbol"],
-                "close": price_data["close"]
+                "close":  price_data["close"]
             }
         )
 
