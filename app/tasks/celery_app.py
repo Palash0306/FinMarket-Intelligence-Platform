@@ -84,5 +84,11 @@ celery_app.conf.update(
         "task": "app.tasks.scheduled.fetch_stocktwits_sentiment",
         "schedule": crontab(minute=0, hour="*/1"),
     },
+    
+    "run-forecasting": {
+    "task": "app.tasks.scheduled.run_forecasting",
+    # Run daily at 9am UTC (2:30pm IST)
+    "schedule": crontab(hour=9, minute=0),
+},
 }
 )

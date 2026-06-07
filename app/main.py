@@ -47,6 +47,8 @@ from app.api.prices import router as prices_router
 # reads from RDS news_articles + stocktwits_posts tables
 from app.api.news import router as news_router
 
+from app.api.forecasts import router as forecasts_router
+
 
 # ── Module logger ─────────────────────────────────────────
 #
@@ -176,6 +178,7 @@ app.middleware("http")(request_middleware)
 app.include_router(stocks_router)
 app.include_router(prices_router)   # ← add this
 app.include_router(news_router)     # ← add this
+app.include_router(forecasts_router)
 
 
 # ── System endpoints ──────────────────────────────────────

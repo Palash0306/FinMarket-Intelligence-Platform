@@ -154,3 +154,67 @@ def fetch_stocktwits_sentiment():
         extra={"messages_published": count}
     )
     return {"messages_published": count}
+
+
+@celery_app.task(
+    name="app.tasks.scheduled.run_forecasting",
+    autoretry_for=(Exception,),
+    max_retries=2,
+    default_retry_delay=300
+)
+def run_forecasting():
+    """
+    Runs daily at 9am UTC.
+    Trains Prophet + XGBoost for ALL active symbols.
+
+    Connection chain:
+    Celery beat (daily 9am)
+        ↓
+    get active symbols from RDS stocks table
+        ↓
+    run_prophet_forecast(symbol) per symbol
+        ↓ reads from ClickHouse ohlcv
+        ↓ saves to RDS forecasts table
+        ↓ logs to MLflow
+
+    run_xgb_forecast(symbol) per symbol
+        ↓ reads from ClickHouse ohlcv
+        ↓ builds features (feature_engineering.py)
+        ↓ saves to RDS forecasts table
+        ↓ logs to MLflow
+    """
+    from app.ml.forecasting.prophet_model import run_prophet_forecast
+    from app.ml.forecasting.xgb_model import run_xgb_forecast
+    from app.db.session import SessionLocal
+    from app.models.stock import Stock
+
+    logger.info("task_started: run_forecasting")
+
+    db = SessionLocal()
+    try:
+        symbols = [
+            s.symbol for s in
+            db.query(Stock).filter(Stock.is_active == True).all()
+        ]
+    finally:
+        db.close()
+
+    results = []
+    for symbol in symbols:
+        prophet_result = run_prophet_forecast(symbol)
+        xgb_result     = run_xgb_forecast(symbol)
+        results.append({
+            "symbol":  symbol,
+            "prophet": prophet_result.get("status"),
+            "xgb":     xgb_result.get("status")
+        })
+        logger.info(
+            "symbol_forecast_done",
+            extra={"symbol": symbol}
+        )
+
+    logger.info(
+        "task_completed: run_forecasting",
+        extra={"total": len(results)}
+    )
+    return {"forecasted": len(results), "results": results}

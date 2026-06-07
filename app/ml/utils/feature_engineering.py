@@ -226,6 +226,16 @@ def build_feature_dataframe(
         return pd.DataFrame()
 
     df = prices_df.copy()
+    
+     # ── Normalise column name ─────────────────────────────
+    #
+    # get_price_history_from_clickhouse() returns 'date'
+    # Some other callers might pass 'timestamp'
+    # We normalise to 'timestamp' so the rest of the
+    # function works consistently regardless of source
+    
+    if "date" in df.columns and "timestamp" not in df.columns:
+        df = df.rename(columns={"date": "timestamp"})
 
     # Sort by time — essential for rolling calculations
     df = df.sort_values("timestamp").reset_index(drop=True)
