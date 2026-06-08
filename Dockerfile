@@ -9,12 +9,19 @@ WORKDIR /app
 
 # Copy requirements first — Docker caches this layer
 # If requirements.txt hasn't changed, pip install is skipped on rebuild
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    make \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir --prefer-binary -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
+RUN python -c "import cmdstanpy; cmdstanpy.install_cmdstan()"
 # Copy the rest of the application code
 COPY . .
 

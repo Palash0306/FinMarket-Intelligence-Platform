@@ -118,7 +118,7 @@ def get_feature_columns(df: pd.DataFrame) -> list[str]:
     - tomorrow_close: this leaks future data
     """
     exclude = {
-        "timestamp", "date", "close", "open", "high",
+        "timestamp", "date","ds", "close", "open", "high",
         "low", "volume", "target", "tomorrow_close"
     }
     return [col for col in df.columns if col not in exclude]
@@ -314,7 +314,7 @@ def run_xgb_forecast(symbol: str) -> dict:
     )
 
     # ── Step 1: Fetch prices ──────────────────────────────
-    df_raw = get_price_history_from_clickhouse(symbol, days=90)
+    df_raw = get_price_history_from_clickhouse(symbol, days=250)
 
     if df_raw.empty:
         return {"symbol": symbol, "status": "no_data"}

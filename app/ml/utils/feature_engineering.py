@@ -236,6 +236,12 @@ def build_feature_dataframe(
     
     if "date" in df.columns and "timestamp" not in df.columns:
         df = df.rename(columns={"date": "timestamp"})
+    elif "ds" in df.columns and "timestamp" not in df.columns:
+        df = df.rename(columns={"ds": "timestamp"})
+        
+    # # 2. Map Prophet close price 'y' to standard 'close'
+    # if "y" in df.columns and "close" not in df.columns:
+    #     df = df.rename(columns={"y": "close"})    
 
     # Sort by time — essential for rolling calculations
     df = df.sort_values("timestamp").reset_index(drop=True)

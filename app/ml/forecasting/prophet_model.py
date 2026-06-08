@@ -147,7 +147,7 @@ def get_price_history_from_clickhouse(
         extra={"symbol": symbol, "rows": len(df)}
     )
 
-    return df[["ds", "y", "close", "volume"]]
+    return df[["ds", "y", "date", "open", "high", "low", "close", "volume"]]
 
 
 def train_prophet_model(
