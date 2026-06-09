@@ -37,19 +37,15 @@ from app.middleware.error_handler import (
 # ── Import routers ────────────────────────────────────────
 # Phase 1
 from app.api.stocks import router as stocks_router
-
 # Phase 2 Day 3 — new
 # prices_router → handles /api/prices/* endpoints
 # reads from ClickHouse ohlcv table
 from app.api.prices import router as prices_router
-
 # news_router → handles /api/news/* and /api/news/*/sentiment
 # reads from RDS news_articles + stocktwits_posts tables
 from app.api.news import router as news_router
-
 from app.api.forecasts import router as forecasts_router
-
-
+from app.api.anomalies import router as anomalies_router
 # ── Module logger ─────────────────────────────────────────
 #
 # __name__ here is "app.main" — useful for filtering logs
@@ -179,7 +175,7 @@ app.include_router(stocks_router)
 app.include_router(prices_router)   # ← add this
 app.include_router(news_router)     # ← add this
 app.include_router(forecasts_router)
-
+app.include_router(anomalies_router)
 
 # ── System endpoints ──────────────────────────────────────
 @app.get("/health", tags=["System"])

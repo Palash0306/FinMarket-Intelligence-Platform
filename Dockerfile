@@ -1,5 +1,3 @@
-# path: Dockerfile
-
 # Use the official Python 3.11 slim image as base
 # 'slim' means it's a smaller image — faster to build and push
 FROM python:3.11-slim
@@ -22,8 +20,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 RUN python -c "import cmdstanpy; cmdstanpy.install_cmdstan()"
-# Copy the rest of the application code
-COPY . .
+RUN pip install --no-cache-dir https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
 # Expose port 8000
 EXPOSE 8000

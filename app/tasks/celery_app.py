@@ -89,6 +89,22 @@ celery_app.conf.update(
     "task": "app.tasks.scheduled.run_forecasting",
     # Run daily at 9am UTC (2:30pm IST)
     "schedule": crontab(hour=9, minute=0),
-},
+    
+    "run-sentiment-nlp": {
+    "task": "app.tasks.scheduled.run_sentiment_nlp",
+    "schedule": crontab(minute="*/30"),
+    },
+    "run-anomaly-check": {
+        "task": "app.tasks.scheduled.run_anomaly_check",
+        "schedule": crontab(minute="*/15"),
+    },
+    "run-embeddings": {
+        "task": "app.tasks.scheduled.run_embeddings",
+        "schedule": crontab(minute=0, hour="*/1"),
+    },
+    
+    
+    
+},    
 }
 )
