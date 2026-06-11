@@ -46,6 +46,7 @@ from app.api.prices import router as prices_router
 from app.api.news import router as news_router
 from app.api.forecasts import router as forecasts_router
 from app.api.anomalies import router as anomalies_router
+from app.api.chat import router as chat_router
 # ── Module logger ─────────────────────────────────────────
 #
 # __name__ here is "app.main" — useful for filtering logs
@@ -176,7 +177,7 @@ app.include_router(prices_router)   # ← add this
 app.include_router(news_router)     # ← add this
 app.include_router(forecasts_router)
 app.include_router(anomalies_router)
-
+app.include_router(chat_router)
 # ── System endpoints ──────────────────────────────────────
 @app.get("/health", tags=["System"])
 async def health_check():

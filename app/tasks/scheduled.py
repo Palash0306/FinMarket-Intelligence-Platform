@@ -97,7 +97,7 @@ def fetch_news_articles():
     │       ↓ consumed by                              │
     │ news_consumer.py                                 │
     │       ↓ deduplicates by URL                      │
-    │       ↓ writes to                               │
+    │       ↓ writes to                                │
     │ RDS news_articles table                          │
     │       ↓ read by Phase 3                          │
     │ spaCy NER → fills ticker_symbols                 │
@@ -115,9 +115,6 @@ def fetch_news_articles():
     )
     return {"articles_published": count}
 
-
-# path: app/tasks/scheduled.py
-# Find fetch_stocktwits_sentiment and replace with:
 
 @celery_app.task(
     name="app.tasks.scheduled.fetch_stocktwits_sentiment",
