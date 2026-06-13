@@ -1,64 +1,67 @@
 # FinMarket Intelligence Platform
 
 A full-stack financial intelligence platform with real-time data pipelines,
-ML forecasting, RAG-powered AI analysis, and automated alerting.
+ML forecasting, RAG-powered AI analysis, and an interactive web dashboard.
 Built entirely on free infrastructure.
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-green)
+![Streamlit](https://img.shields.io/badge/Dashboard-Streamlit-red)
 ![AWS](https://img.shields.io/badge/AWS-RDS%20%7C%20S3%20%7C%20CloudWatch-orange)
 ![Docker](https://img.shields.io/badge/Docker-Compose-blue)
-![Prophet](https://img.shields.io/badge/ML-Prophet%20%7C%20XGBoost-purple)
-![LangGraph](https://img.shields.io/badge/AI-LangGraph%20%7C%20Groq%20LLaMA3-red)
+![LangGraph](https://img.shields.io/badge/AI-LangGraph%20%7C%20Groq%20LLaMA3-purple)
 
 ## Live Demo
-> Dashboard: [coming in Phase 5]
-> API Docs: [coming in Phase 6]
+> Dashboard: [coming in Phase 6 — Streamlit Cloud]
+> API Docs: [coming in Phase 6 — AWS EC2]
 
 ## What This Platform Does
 
 FinMarket Intelligence is a production-grade financial analysis system that:
 
-- Collects real stock prices, news, and sentiment data automatically every few minutes
-- Runs ML models daily to forecast prices (Prophet) and predict direction (XGBoost)
-- Detects unusual price and volume events using statistical anomaly detection
-- Scores news article sentiment using transformer-based NLP models
-- Embeds all news into vector representations for semantic search
-- Answers natural language questions about any tracked stock using RAG + LLaMA3
+- Collects real stock prices, news, and sentiment every few minutes automatically
+- Runs ML models daily to forecast prices and predict market direction
+- Detects unusual price and volume events using statistical analysis
+- Scores news article sentiment using transformer-based NLP
+- Answers natural language questions about any stock using RAG + LLaMA3
+- Displays everything in an interactive web dashboard
 
-Ask it: *"Should I be worried about Apple given recent news and price trends?"*
-It retrieves real data from all sources and generates a grounded answer.
+Ask it: *"Give me a full analysis of Apple stock"*
+It retrieves live prices, forecasts, news, and sentiment — then generates a grounded answer.
 
 ## Architecture
-
-```
-Real financial data (yfinance, NewsAPI, RSS feeds, Alpha Vantage)
-        ↓
-Kafka event stream (Docker KRaft — no Zookeeper)
-        ↓
+Real financial data (yfinance, NewsAPI, RSS, Alpha Vantage)
+↓
+Kafka event stream (Docker — KRaft mode, no Zookeeper)
+↓
 ClickHouse (price time-series) + PostgreSQL/RDS (news, forecasts, vectors)
-        ↓
-ML Pipeline (runs automatically via Celery):
-  Prophet        → 7-day price forecast with confidence intervals
-  XGBoost        → buy/sell direction signal + confidence score
-  spaCy NER      → extracts ticker mentions from news headlines
-  sentence-transformers → sentiment scoring -1.0 to +1.0
-  statsmodels    → z-score anomaly detection (price + volume)
-  pgvector       → 384-dim semantic embeddings
-        ↓
+↓
+ML Pipeline (automated via Celery):
+Prophet          → 7-day price forecast with confidence intervals
+XGBoost          → buy/sell direction signal + confidence score
+spaCy NER        → extracts ticker mentions from news headlines
+sentence-transformers → sentiment scoring -1.0 to +1.0
+statsmodels      → z-score anomaly detection (price + volume)
+pgvector         → 384-dim semantic embeddings for RAG
+↓
 RAG + AI Layer:
-  pgvector semantic search → finds relevant articles for any query
-  LangGraph agent          → 3-node workflow (intent → retrieve → generate)
-  Groq LLaMA3-70b          → generates grounded natural language answers
-        ↓
-REST API (FastAPI) → Streamlit Dashboard (Phase 5)
-```
+pgvector search  → finds relevant articles for any query
+LangGraph agent  → intent → retrieve → generate workflow
+Groq LLaMA3-70b  → generates grounded natural language answers
+↓
+Streamlit Dashboard (5 pages):
+Market Overview  → all stocks watchlist + ML signals
+Stock Detail     → price charts, forecasts, sentiment, news
+Anomalies        → alert feed with severity filtering
+AI Chat          → natural language Q&A with chat history
+Settings         → system health + stock management
 
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
 | API | FastAPI 0.111, Pydantic v2, SQLAlchemy 2.0 |
+| Dashboard | Streamlit, Plotly (interactive charts) |
 | Primary DB | AWS RDS PostgreSQL 16 + pgvector extension |
 | Time-series DB | ClickHouse 23.8 (Docker) |
 | Cache / Broker | Redis 7 (Docker) + Celery 5.4 |
@@ -67,13 +70,12 @@ REST API (FastAPI) → Streamlit Dashboard (Phase 5)
 | ML NLP | spaCy 3.7.5, sentence-transformers 2.7.0 |
 | ML Stats | statsmodels 0.14.2, scikit-learn 1.4.2 |
 | ML Tracking | MLflow 2.13.0 |
-| AI Agent | LangGraph 0.0.69, LangChain 0.2.0 |
+| AI Agent | LangGraph 0.1.1, LangChain 0.2.5 |
 | LLM | Groq API — LLaMA3-70b (free tier) |
-| Vector Search | pgvector (cosine similarity) |
+| Vector Search | pgvector cosine similarity |
 | Storage | AWS S3 (raw data + MLflow artifacts) |
-| Monitoring | AWS CloudWatch, Flower (Celery UI), MLflow UI |
+| Monitoring | AWS CloudWatch, Flower, MLflow UI |
 | CI/CD | GitHub Actions → AWS ECR → EC2 (Phase 6) |
-| Dashboard | Streamlit Community Cloud (Phase 5) |
 
 ## Data Sources (all free)
 
@@ -86,18 +88,18 @@ REST API (FastAPI) → Streamlit Dashboard (Phase 5)
 | Yahoo Finance RSS | Market news | No |
 | MarketWatch RSS | Market news | No |
 | Alpha Vantage | News + NLP sentiment | Yes (free tier) |
-| Groq API | LLaMA3-70b LLM | Yes (free tier) |
+| Groq API | LLaMA3-70b LLM inference | Yes (free tier) |
 
 ## Project Phases
 
 | Phase | What | Status |
 |---|---|---|
-| Phase 1 | Foundation — FastAPI, AWS RDS, Docker, tests | ✅ Complete |
-| Phase 2 | Data ingestion — prices, news, sentiment pipeline | ✅ Complete |
-| Phase 3 | ML models — forecasting, NLP, anomaly detection | ✅ Complete |
-| Phase 4 | RAG + LangGraph AI agent + Groq LLM | ✅ Complete |
-| Phase 5 | Streamlit dashboard + email alerts | 🔄 In progress |
-| Phase 6 | Deploy to AWS EC2 + GitHub Actions CI/CD | ⏳ Upcoming |
+| Phase 1 | Foundation — FastAPI, AWS RDS, Docker, Alembic, tests | ✅ Complete |
+| Phase 2 | Data ingestion — prices, news, sentiment via Kafka | ✅ Complete |
+| Phase 3 | ML models — Prophet, XGBoost, NLP, anomaly detection | ✅ Complete |
+| Phase 4 | RAG + LangGraph AI agent + Groq LLM chat API | ✅ Complete |
+| Phase 5 | Streamlit dashboard — 5 pages, charts, AI chat UI | ✅ Complete |
+| Phase 6 | Deploy to AWS EC2 + GitHub Actions CI/CD | 🔄 In progress |
 
 ## Getting Started
 
@@ -105,8 +107,8 @@ REST API (FastAPI) → Streamlit Dashboard (Phase 5)
 - Docker Desktop
 - Python 3.11
 - AWS account (free tier)
-- Groq API key (free at console.groq.com)
-- NewsAPI key (free at newsapi.org)
+- Groq API key — free at [console.groq.com](https://console.groq.com)
+- NewsAPI key — free at [newsapi.org](https://newsapi.org)
 
 ### Local Development
 
@@ -126,64 +128,45 @@ source .venv/bin/activate      # Windows: .venv\Scripts\Activate.ps1
 # Install dependencies
 pip install -r requirements.txt
 
-# Download spaCy language model
+# Download spaCy model
 python -m spacy download en_core_web_sm
 
 # Run database migrations
 alembic upgrade head
 
-# Seed initial stock data (10 companies)
+# Seed initial stock data
 python scripts/seed_stocks.py
 
-# Seed 1 year of historical price data into ClickHouse
+# Seed 1 year of historical prices into ClickHouse
 python scripts/seed_prices.py
 
-# Start all services
+# Start all services (API + dashboard + all pipelines)
 docker compose up --build
 ```
 
-### Verify everything is running
+### Open the dashboard
+http://localhost:8501
+
+### Verify the API
 
 ```bash
-# System health (checks RDS + ClickHouse)
 curl http://localhost:8000/health
-
-# Stock list
-curl http://localhost:8000/api/stocks/
-
-# Live price
 curl http://localhost:8000/api/prices/AAPL
-
-# Generate ML forecast (runs in background)
-curl -X POST http://localhost:8000/api/forecasts/AAPL/run
-
-# Get forecast after ~30 seconds
-curl http://localhost:8000/api/forecasts/AAPL
-
-# Latest news
-curl http://localhost:8000/api/news/AAPL
-
-# Sentiment chart data
-curl "http://localhost:8000/api/news/AAPL/sentiment?days=7"
-
-# Anomaly alerts
-curl http://localhost:8000/api/anomalies/AAPL
-
-# AI chat (requires Groq API key)
 curl -X POST http://localhost:8000/api/chat/ \
   -H "Content-Type: application/json" \
-  -d '{"question": "What is the current price and outlook for Apple?"}'
+  -d '{"question": "What is the outlook for Apple?"}'
 ```
 
-### Local monitoring dashboards
+### Local monitoring
 
-| URL | What you see |
+| URL | What |
 |---|---|
-| http://localhost:8000/docs | All 22 API endpoints (Swagger UI) |
+| http://localhost:8501 | Streamlit dashboard (5 pages) |
+| http://localhost:8000/docs | FastAPI Swagger UI (22 endpoints) |
 | http://localhost:5555 | Flower — Celery task monitor |
 | http://localhost:5001 | MLflow — ML experiment tracker |
 | http://localhost:8090 | Kafka UI — message stream monitor |
-| http://localhost:8080 | Adminer — database browser (RDS + local) |
+| http://localhost:8080 | Adminer — database browser |
 | http://localhost:8123/play | ClickHouse SQL playground |
 
 ### Run tests
@@ -193,20 +176,82 @@ pytest tests/ -v
 ```
 
 ## Automated Data Pipeline
-
-Everything below runs automatically while Docker is running:
-
-```
 Every 5 min    yfinance → Kafka → ClickHouse ohlcv
-Every 15 min   ClickHouse → z-score analysis → RDS anomalies
+Every 15 min   ClickHouse → z-score → RDS anomalies
 Every 30 min   NewsAPI + RSS → Kafka → RDS news_articles
-               spaCy NER → fills ticker_symbols column
-               sentence-transformers → fills sentiment_score
+spaCy NER → fills ticker_symbols
+sentence-transformers → fills sentiment_score
 Every hour     Alpha Vantage → Kafka → RDS sentiment signals
-               sentence-transformers → pgvector embeddings
-Daily 9am UTC  Prophet → 7-day price forecast → RDS forecasts
-               XGBoost → buy/sell direction signal → RDS forecasts
-```
+sentence-transformers → pgvector embeddings
+Daily 9am UTC  Prophet → 7-day price forecast → RDS
+XGBoost → direction signal → RDS
+
+## Dashboard Pages
+
+### Market Overview (Home)
+- Live watchlist showing all 10 stocks with current prices
+- ML signal badges (UP/DOWN) with confidence percentages
+- Mini sparkline charts for 7-day price trend
+- Recent anomaly alerts with severity indicators
+- System health status for RDS and ClickHouse
+
+### Stock Detail
+- Interactive candlestick price chart with volume bars
+- 7-day Prophet price forecast with 80% confidence bands
+- XGBoost direction signal with model accuracy
+- Daily sentiment trend bar chart (bullish/bearish/neutral)
+- Latest news feed with sentiment scores and source links
+- One-click forecast trigger button
+
+### Anomalies
+- Full anomaly alert feed filterable by stock and severity
+- Statistical details (z-score, actual vs expected values)
+- Table view for easy scanning across all detected events
+
+### AI Chat
+- Natural language Q&A powered by LangGraph + Groq LLaMA3
+- Persistent chat history within session
+- Example question shortcuts in sidebar
+- Source transparency (shows which stocks and intent were used)
+- Covers: prices, forecasts, news analysis, anomalies, sentiment
+
+### Settings
+- Live system health indicators (RDS, ClickHouse)
+- Full tracked stocks table with sector/industry
+- Quick links to all monitoring dashboards
+
+## API Reference (22 endpoints)
+
+### System
+| GET | /health | RDS + ClickHouse health |
+| GET | /docs | Swagger UI |
+
+### Stocks (5 endpoints)
+| GET/POST/PATCH/DELETE | /api/stocks/* | CRUD operations |
+
+### Prices (4 endpoints)
+| GET | /api/prices/ | All stocks latest |
+| GET | /api/prices/{symbol} | Latest + change % |
+| GET | /api/prices/{symbol}/history | Historical candles |
+| GET | /api/prices/{symbol}/summary | Daily aggregates |
+
+### News + Sentiment (3 endpoints)
+| GET | /api/news/ | All recent news |
+| GET | /api/news/{symbol} | Symbol news |
+| GET | /api/news/{symbol}/sentiment | Sentiment series |
+
+### Forecasts (3 endpoints)
+| GET | /api/forecasts/ | All signals |
+| GET | /api/forecasts/{symbol} | Full forecast |
+| POST | /api/forecasts/{symbol}/run | Trigger models |
+
+### Anomalies (2 endpoints)
+| GET | /api/anomalies/ | All anomalies |
+| GET | /api/anomalies/{symbol} | Symbol anomalies |
+
+### AI Chat (2 endpoints)
+| POST | /api/chat/ | Ask a question |
+| GET | /api/chat/health | Groq configuration |
 
 ## AWS Infrastructure (all free tier)
 
@@ -214,144 +259,62 @@ Daily 9am UTC  Prophet → 7-day price forecast → RDS forecasts
 |---|---|---|
 | RDS t3.micro | PostgreSQL 16 + pgvector | 750 hrs/month, 12 months |
 | EC2 t2.micro | FastAPI + Celery (Phase 6) | 750 hrs/month, 12 months |
-| S3 | Raw data archive + MLflow model artifacts | 5 GB forever |
-| SES | Alert emails (Phase 5) | 3,000/month forever |
-| CloudWatch | Structured JSON logs + metrics | 5 GB forever |
-
-## API Reference
-
-### System
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /health | RDS + ClickHouse health check |
-| GET | /docs | Interactive Swagger UI |
-
-### Stocks
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /api/stocks/ | All tracked stocks |
-| GET | /api/stocks/{symbol} | One stock |
-| POST | /api/stocks/ | Add stock |
-| PATCH | /api/stocks/{symbol} | Update stock |
-| DELETE | /api/stocks/{symbol} | Deactivate stock |
-
-### Prices
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /api/prices/ | All stocks latest prices |
-| GET | /api/prices/{symbol} | Latest price + change % |
-| GET | /api/prices/{symbol}/history | Historical candles |
-| GET | /api/prices/{symbol}/summary | Daily aggregates |
-
-### News + Sentiment
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /api/news/ | Latest news all stocks |
-| GET | /api/news/{symbol} | News for one stock |
-| GET | /api/news/{symbol}/sentiment | Sentiment time series |
-
-### ML Forecasts
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /api/forecasts/ | All stocks latest signals |
-| GET | /api/forecasts/{symbol} | 7-day forecast + direction signal |
-| POST | /api/forecasts/{symbol}/run | Trigger forecast now |
-
-### Anomalies
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /api/anomalies/ | All recent anomalies |
-| GET | /api/anomalies/{symbol} | Anomalies for one stock |
-
-### AI Chat
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | /api/chat/ | Ask any financial question |
-| GET | /api/chat/health | Check Groq API configuration |
-
-## AI Chat Examples
-
-```bash
-# Price and forecast
-curl -X POST http://localhost:8000/api/chat/ \
-  -H "Content-Type: application/json" \
-  -d '{"question": "What is the forecast for NVIDIA this week?"}'
-
-# News analysis
-curl -X POST http://localhost:8000/api/chat/ \
-  -H "Content-Type: application/json" \
-  -d '{"question": "What is the latest news about Goldman Sachs?"}'
-
-# Anomaly check
-curl -X POST http://localhost:8000/api/chat/ \
-  -H "Content-Type: application/json" \
-  -d '{"question": "Any unusual market activity today?"}'
-
-# Full analysis
-curl -X POST http://localhost:8000/api/chat/ \
-  -H "Content-Type: application/json" \
-  -d '{"question": "Give me a full analysis of Apple stock"}'
-```
+| S3 | Raw data archive + MLflow artifacts | 5 GB forever |
+| SES | Alert emails | 3,000/month forever |
+| CloudWatch | Structured JSON logs | 5 GB forever |
 
 ## Key Technical Decisions
 
 **Why two databases?**
-ClickHouse is a columnar database optimised for time-series aggregations.
-`AVG(close) per hour for 90 days` across millions of rows runs in milliseconds.
-Postgres handles text search, relationships, and the pgvector extension for RAG.
-Each database does what it is best at.
+ClickHouse handles millions of 5-minute price candles with sub-second aggregations.
+Postgres handles text, relationships, and pgvector for RAG semantic search.
+Each database does what it does best.
 
-**Why Kafka between fetchers and storage?**
-Decoupling. If ClickHouse is temporarily slow, messages queue in Kafka safely.
-The fetcher never blocks. No data loss during restarts or slowdowns.
+**Why Kafka?**
+Decoupling. Fetchers publish and move on. Consumers process independently.
+If ClickHouse restarts, no price data is lost — messages wait in Kafka.
 
-**Why pre-compute ML forecasts instead of computing on request?**
-Prophet training takes 30 seconds per symbol — 10 symbols = 5 minutes total.
-Celery runs this daily at 9am UTC silently in the background.
-The API reads pre-computed results in 30ms. Users never wait.
+**Why pre-compute ML predictions?**
+Prophet takes 30 seconds per symbol. Celery runs this at 9am daily.
+The API returns pre-computed results in 30ms. Users never wait.
 
-**Why RAG instead of just asking the LLM directly?**
-LLMs have knowledge cutoffs and cannot access real-time data.
-RAG retrieves your actual current data first, then passes it as context.
-The LLM answers using real prices, real news, real forecasts — not hallucinations.
+**Why RAG instead of asking the LLM directly?**
+LLMs have knowledge cutoffs. RAG retrieves your actual current data first,
+then the LLM generates answers grounded in real prices, news, and forecasts.
 
-**Why LangGraph instead of a single LLM call?**
-A single call cannot decide which data sources to query based on the question.
-LangGraph's graph structure enables: extract intent → route to correct tools →
-retrieve relevant data → generate grounded answer. Each step is testable.
-
-**Why Groq instead of OpenAI?**
-Groq's free tier provides 14,400 requests per day with LLaMA3-70b.
-No credit card required. Fast inference. Sufficient quality for financial Q&A.
-This project is built entirely on free infrastructure — Groq fits that constraint.
+**Why Streamlit?**
+Pure Python — no HTML, CSS, or JavaScript. The entire dashboard is Python.
+Charts, tables, chat interfaces, metrics — all rendered from Python code.
+Perfect for a data-heavy application where the backend is already Python.
 
 ## What I Built and Learned
 
-**Architecture:**
-- Decoupled data pipeline (Celery + Kafka) fully separate from API layer
-- Two-database strategy (ClickHouse + Postgres) with right tool for each data type
-- RAG pattern: vector embeddings → semantic retrieval → LLM generation
-- LangGraph multi-node agent workflow with intent classification
+**Architecture patterns:**
+- Event-driven data pipeline with Kafka decoupling
+- Two-database strategy optimised for different query types
+- RAG pattern with pgvector semantic retrieval
+- LangGraph multi-node agent with intent classification
+- Pre-computation pattern for ML predictions (Celery + API separation)
 
-**ML Engineering:**
-- Time-series forecasting with Prophet (confidence intervals, seasonality)
-- Binary classification with XGBoost (no shuffle split, feature engineering)
+**ML engineering:**
+- Time-series forecasting with Prophet (trend + seasonality)
+- Binary classification with XGBoost (no-shuffle time-series split)
 - Statistical anomaly detection with rolling z-scores
 - Zero-shot sentiment scoring with sentence-transformers
-- Named entity recognition with spaCy for ticker extraction
-- Experiment tracking with MLflow (params, metrics, model artifacts)
+- NER with spaCy for ticker entity extraction
+- MLflow experiment tracking across Prophet + XGBoost runs
 
 **Infrastructure:**
-- AWS free tier: RDS PostgreSQL with pgvector, S3, CloudWatch
-- Docker Compose with 10 services (Kafka, ClickHouse, Redis, MLflow, Flower)
+- AWS free tier: RDS PostgreSQL, S3, CloudWatch
+- Docker Compose with 11 services running simultaneously
 - Structured JSON logging with CloudWatch integration
-- Alembic database migrations with version control
+- Alembic migrations with version-controlled schema changes
 
-**API Design:**
+**API and UI design:**
 - 22 REST endpoints across 6 domains
-- Global error handling middleware with request ID tracking
-- Pydantic v2 schemas for request validation and response shaping
-- FastAPI BackgroundTasks for non-blocking ML model execution
+- FastAPI dependency injection + global error handling
+- Streamlit 5-page dashboard with Plotly interactive charts
+- Persistent chat history with session state management
 
 ## Tracked Stocks
 

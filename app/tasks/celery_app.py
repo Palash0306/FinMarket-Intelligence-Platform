@@ -48,63 +48,46 @@ celery_app = Celery(
 
 # ── Celery configuration ──────────────────────────────────
 celery_app.conf.update(
-    # Timezone for scheduled tasks
     timezone="UTC",
     enable_utc=True,
-
-    # How task results are serialised
     task_serializer="json",
     result_serializer="json",
     accept_content=["json"],
+    broker_connection_retry_on_startup=True,
 
-    # ── Beat Schedule ─────────────────────────────────────
+    # ── Fix: use underscores not hyphens in all keys ──────
     #
-    # This is the actual schedule.
-    # Each entry = one recurring task.
-    #
-    # crontab(minute="*/5") = every 5 minutes
-    # crontab(minute="*/30") = every 30 minutes
-    # crontab(minute=0, hour="*/1") = every hour
+    # Celery beat schedule keys must not contain hyphens.
+    # Hyphens cause TypeError on startup which silently
+    # kills the entire scheduler — no tasks run at all.
     beat_schedule={
-    # ── Fetch stock prices every 5 minutes ────────────
-    "fetch-stock-prices": {
-        "task": "app.tasks.scheduled.fetch_stock_prices",
-        "schedule": crontab(minute="*/5"),
-    },
-
-    # ── Fetch news every 30 minutes ───────────────────
-    "fetch-news-articles": {
-        "task": "app.tasks.scheduled.fetch_news_articles",
-        "schedule": crontab(minute="*/30"),
-    },
-
-    # ── Fetch Stocktwits sentiment every hour ─────────
-    # Replaced Reddit — same schedule, better data
-    "fetch-stocktwits-sentiment": {
-        "task": "app.tasks.scheduled.fetch_stocktwits_sentiment",
-        "schedule": crontab(minute=0, hour="*/1"),
-    },
-    
-    "run-forecasting": {
-    "task": "app.tasks.scheduled.run_forecasting",
-    # Run daily at 9am UTC (2:30pm IST)
-    "schedule": crontab(hour=9, minute=0),
-    
-    "run-sentiment-nlp": {
-    "task": "app.tasks.scheduled.run_sentiment_nlp",
-    "schedule": crontab(minute="*/30"),
-    },
-    "run-anomaly-check": {
-        "task": "app.tasks.scheduled.run_anomaly_check",
-        "schedule": crontab(minute="*/15"),
-    },
-    "run-embeddings": {
-        "task": "app.tasks.scheduled.run_embeddings",
-        "schedule": crontab(minute=0, hour="*/1"),
-    },
-    
-    
-    
-},    
-}
+        "fetch_stock_prices": {
+            "task": "app.tasks.scheduled.fetch_stock_prices",
+            "schedule": crontab(minute="*/5"),
+        },
+        "fetch_news_articles": {
+            "task": "app.tasks.scheduled.fetch_news_articles",
+            "schedule": crontab(minute="*/30"),
+        },
+        "fetch_stocktwits_sentiment": {
+            "task": "app.tasks.scheduled.fetch_stocktwits_sentiment",
+            "schedule": crontab(minute=0, hour="*/1"),
+        },
+        "run_forecasting": {
+            "task": "app.tasks.scheduled.run_forecasting",
+            "schedule": crontab(hour=9, minute=0),
+        },
+        "run_sentiment_nlp": {
+            "task": "app.tasks.scheduled.run_sentiment_nlp",
+            "schedule": crontab(minute="*/30"),
+        },
+        "run_anomaly_check": {
+            "task": "app.tasks.scheduled.run_anomaly_check",
+            "schedule": crontab(minute="*/15"),
+        },
+        "run_embeddings": {
+            "task": "app.tasks.scheduled.run_embeddings",
+            "schedule": crontab(minute=0, hour="*/1"),
+        },
+    }
 )

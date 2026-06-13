@@ -228,10 +228,33 @@ services:
              --default-artifact-root /mlruns"
     networks:
       - finmarket_network
+
+  dashboard:
+    image: python:3.11-slim
+    container_name: finmarket_dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./dashboard:/app
+      - ./requirements.txt:/requirements.txt
+    working_dir: /app
+    command: >
+      sh -c "pip install streamlit plotly requests pandas -q &&
+              streamlit run Home.py
+              --server.port=8501
+              --server.address=0.0.0.0"
+    networks:
+      - finmarket_network
+    depends_on:
+      - api
+
 volumes:
   postgres_data:
   redis_data:
   clickhouse_data:     # ← new
+
+
+  
 
 networks:
   finmarket_network:
