@@ -1,0 +1,1460 @@
+.
+├── alembic
+│   ├── __pycache__
+│   │   └── env.cpython-311.pyc
+│   ├── env.py
+│   ├── README
+│   ├── script.py.mako
+│   └── versions
+│       ├── __pycache__
+│       │   ├── 12d4cce60853_add_forecasts_and_anomalies_tables.cpython-311.pyc
+│       │   ├── 39d86517d52f_add_news_articles_and_stocktwits_posts_.cpython-311.pyc
+│       │   ├── 606cef4b24cf_add_forecasts_and_anomalies_tables.cpython-311.pyc
+│       │   ├── 82065e98a0f5_add_news_articles_and_stocktwits_posts_.cpython-311.pyc
+│       │   └── 860fcf038fea_create_stocks_table.cpython-311.pyc
+│       ├── 12d4cce60853_add_forecasts_and_anomalies_tables.py
+│       ├── 39d86517d52f_add_news_articles_and_stocktwits_posts_.py
+│       ├── 606cef4b24cf_add_forecasts_and_anomalies_tables.py
+│       ├── 82065e98a0f5_add_news_articles_and_stocktwits_posts_.py
+│       └── 860fcf038fea_create_stocks_table.py
+├── alembic.ini
+├── app
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-311.pyc
+│   │   ├── config.cpython-311.pyc
+│   │   └── main.cpython-311.pyc
+│   ├── ai
+│   │   ├── __init__.py
+│   │   └── tools
+│   │       └── __init__.py
+│   ├── alerts
+│   │   └── __init__.py
+│   ├── api
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── anomalies.cpython-311.pyc
+│   │   │   ├── chat.cpython-311.pyc
+│   │   │   ├── forecasts.cpython-311.pyc
+│   │   │   ├── news.cpython-311.pyc
+│   │   │   ├── prices.cpython-311.pyc
+│   │   │   └── stocks.cpython-311.pyc
+│   │   ├── anomalies.py
+│   │   ├── chat.py
+│   │   ├── forecasts.py
+│   │   ├── news.py
+│   │   ├── prices.py
+│   │   └── stocks.py
+│   ├── config.py
+│   ├── consumers
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── news_consumer.cpython-311.pyc
+│   │   │   ├── price_consumer.cpython-311.pyc
+│   │   │   └── sentiment_consumer.cpython-311.pyc
+│   │   ├── news_consumer.py
+│   │   ├── price_consumer.py
+│   │   └── sentiment_consumer.py
+│   ├── db
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── clickhouse.cpython-311.pyc
+│   │   │   └── session.cpython-311.pyc
+│   │   ├── clickhouse.py
+│   │   └── session.py
+│   ├── ingestion
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── news_fetcher.cpython-311.pyc
+│   │   │   ├── s3_helper.cpython-311.pyc
+│   │   │   ├── sentiment_fetcher.cpython-311.pyc
+│   │   │   ├── stock_fetcher.cpython-311.pyc
+│   │   │   └── stocktwits_fetcher.cpython-311.pyc
+│   │   ├── news_fetcher.py
+│   │   ├── s3_helper.py
+│   │   ├── sentiment_fetcher.py
+│   │   └── stock_fetcher.py
+│   ├── main.py
+│   ├── middleware
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   └── error_handler.cpython-311.pyc
+│   │   └── error_handler.py
+│   ├── ml
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   └── __init__.cpython-311.pyc
+│   │   ├── anomaly
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-311.pyc
+│   │   │   │   └── detector.cpython-311.pyc
+│   │   │   └── detector.py
+│   │   ├── embeddings
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-311.pyc
+│   │   │   │   └── embed_news.cpython-311.pyc
+│   │   │   └── embed_news.py
+│   │   ├── forecasting
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-311.pyc
+│   │   │   │   ├── prophet_model.cpython-311.pyc
+│   │   │   │   └── xgb_model.cpython-311.pyc
+│   │   │   ├── prophet_model.py
+│   │   │   └── xgb_model.py
+│   │   ├── nlp
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-311.pyc
+│   │   │   │   ├── ner_pipeline.cpython-311.pyc
+│   │   │   │   └── sentiment.cpython-311.pyc
+│   │   │   ├── ner_pipeline.py
+│   │   │   └── sentiment.py
+│   │   └── utils
+│   │       ├── __init__.py
+│   │       ├── __pycache__
+│   │       │   ├── __init__.cpython-311.pyc
+│   │       │   ├── feature_engineering.cpython-311.pyc
+│   │       │   └── mlflow_helper.cpython-311.pyc
+│   │       ├── feature_engineering.py
+│   │       └── mlflow_helper.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── anomaly.cpython-311.pyc
+│   │   │   ├── base.cpython-311.pyc
+│   │   │   ├── forecast.cpython-311.pyc
+│   │   │   ├── news.cpython-311.pyc
+│   │   │   ├── stock.cpython-311.pyc
+│   │   │   └── stocktwits_post.cpython-311.pyc
+│   │   ├── anomaly.py
+│   │   ├── base.py
+│   │   ├── forecast.py
+│   │   ├── news.py
+│   │   ├── stock.py
+│   │   └── stocktwits_post.py
+│   ├── rag
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── agent.cpython-311.pyc
+│   │   │   ├── rag_tools.cpython-311.pyc
+│   │   │   └── vector_store.cpython-311.pyc
+│   │   ├── agent.py
+│   │   ├── rag_tools.py
+│   │   └── vector_store.py
+│   ├── schemas
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── anomaly.cpython-311.pyc
+│   │   │   ├── chat.cpython-311.pyc
+│   │   │   ├── forecast.cpython-311.pyc
+│   │   │   ├── news.cpython-311.pyc
+│   │   │   ├── price.cpython-311.pyc
+│   │   │   └── stock.cpython-311.pyc
+│   │   ├── anomaly.py
+│   │   ├── chat.py
+│   │   ├── forecast.py
+│   │   ├── news.py
+│   │   ├── price.py
+│   │   └── stock.py
+│   ├── services
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   └── alert_service.cpython-311.pyc
+│   │   └── alert_service.py
+│   ├── tasks
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── celery_app.cpython-311.pyc
+│   │   │   └── scheduled.cpython-311.pyc
+│   │   ├── celery_app.py
+│   │   └── scheduled.py
+│   └── utils
+│       ├── __init__.py
+│       ├── __pycache__
+│       │   ├── __init__.cpython-311.pyc
+│       │   ├── cloudwatch.cpython-311.pyc
+│       │   └── logger.cpython-311.pyc
+│       ├── cloudwatch.py
+│       └── logger.py
+├── celerybeat-schedule
+├── dashboard
+│   ├── components
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── api_client.cpython-311.pyc
+│   │   │   ├── charts.cpython-311.pyc
+│   │   │   └── metrics.cpython-311.pyc
+│   │   ├── api_client.py
+│   │   ├── charts.py
+│   │   └── metrics.py
+│   ├── Home.py
+│   └── pages
+│       ├── 1_Stock_Detail.py
+│       ├── 2_Anomalies.py
+│       ├── 3_AI_Chat.py
+│       └── 4_Settings.py
+├── Day Flow
+│   ├── Day 1.png
+│   ├── Day 2.png
+│   ├── Day 3.png
+│   └── Phase 2 Day1.png
+├── docker-compose.prod.yml
+├── docker-compose.yml
+├── Dockerfile
+├── finmarket.pem
+├── global-bundle.pem
+├── infrastructure
+├── mlruns
+│   ├── 115655688363006956
+│   │   ├── 05afd2f4d1a04a84bc1d838dab1bff1f
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 7f0d9e5028fd456e82fed973da1a9f5c
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── c72eb54424b843ae872830ce50162638
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   └── meta.yaml
+│   ├── 149249999682701114
+│   │   ├── 7af9982156c146a6a2aadfa174653c30
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── a2cfea107355412888171f62e54efda9
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── d20905b2e7c440d9877667bed3186bee
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── f19fcd2a6bc146f18d46f3fbf6020d2b
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   └── meta.yaml
+│   ├── 217742145182695510
+│   │   ├── 43356fbfd2b34e31a75d2f5689b5ead8
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 48f0ec5cd77840e4873d9595b39101ff
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 7b300fd4016f47ff9c1e5b374fbfa297
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   └── meta.yaml
+│   ├── 299502030872293320
+│   │   ├── 21e28c9b3e43498293a2aacc2f195f11
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 5468f9264e1546e089c3132c0f6d99d2
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 9fb7a969029944a1871ccc92a0da2e08
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── d79c63c023744c518ac72cc34a7653ed
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── dad44c6841f94bc9b8794c832d950337
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   └── meta.yaml
+│   ├── 445412875131846948
+│   │   ├── 6e794c48b76c4bd8934d2fa41af330a9
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 98a4411c742341ec859e2a7252b4c425
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   └── meta.yaml
+│   ├── 603127314859812436
+│   │   ├── 1f7ca7965b244f78b375942c43af6220
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 60225a7792eb42b5a6ded602cd04b658
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 6e1ba4a549a14a0eb3b1a92189035e98
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   └── meta.yaml
+│   ├── 611348256520958320
+│   │   ├── 4c739d25dd5b493cb42589c996b52aa3
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 9b6494573e6549f5af9b9787e539099b
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── e0a08898ac744a47897efed59d51b2ac
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   └── meta.yaml
+│   ├── 755017075845798070
+│   │   ├── 6b5c3a2d80be4e92ad3c6c140fc7ec81
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── b446d1f3254849cfbd4f26772059cc2c
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   └── meta.yaml
+│   ├── 821447376681781252
+│   │   ├── 5c85ae034740479dabd6c2b66a75c70a
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── f72cb6d015b1454db2c4803bc51da333
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   └── meta.yaml
+│   ├── 896512239907599190
+│   │   ├── 0495c4a74c2b404b938df2988c97df73
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 0f5de622ec744202bc779778a0ed37d6
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 16932e5517ee427c9b545d6222633b11
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 51fbc1020acf4068a8de13b1237f868f
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 6660d3b5ff1d4de68a549a8bfc5cec5c
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 712f13a91ad94da7a461261b4dbf5fc8
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 73b9b6a2c2844a90baa87cad03d57158
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── 98c1f5e34df44a8f8270a4c24d926f81
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   ├── c636686c4b034eb39db8aa13addf9414
+│   │   │   ├── artifacts
+│   │   │   │   └── model
+│   │   │   │       ├── conda.yaml
+│   │   │   │       ├── metadata
+│   │   │   │       │   ├── conda.yaml
+│   │   │   │       │   ├── MLmodel
+│   │   │   │       │   ├── python_env.yaml
+│   │   │   │       │   └── requirements.txt
+│   │   │   │       ├── MLmodel
+│   │   │   │       ├── model.xgb
+│   │   │   │       ├── python_env.yaml
+│   │   │   │       └── requirements.txt
+│   │   │   ├── meta.yaml
+│   │   │   ├── metrics
+│   │   │   │   ├── accuracy
+│   │   │   │   ├── confidence
+│   │   │   │   ├── precision
+│   │   │   │   └── signal
+│   │   │   ├── params
+│   │   │   │   ├── features_used
+│   │   │   │   ├── learning_rate
+│   │   │   │   ├── max_depth
+│   │   │   │   ├── n_estimators
+│   │   │   │   ├── random_state
+│   │   │   │   ├── subsample
+│   │   │   │   └── symbol
+│   │   │   └── tags
+│   │   │       ├── mlflow.log-model.history
+│   │   │       ├── mlflow.runName
+│   │   │       ├── mlflow.source.name
+│   │   │       ├── mlflow.source.type
+│   │   │       └── mlflow.user
+│   │   └── meta.yaml
+│   └── models
+├── Phases
+│   ├── Phase 1.png
+│   ├── Phase 2.png
+│   ├── Phase 3.png
+│   ├── Phase 4.png
+│   ├── Phase 5.png
+│   └── Phase 6.png
+├── project_structure.txt
+├── README.md
+├── requirements.txt
+├── scripts
+│   ├── __init__.py
+│   ├── seed_prices.py
+│   └── seed_stocks.py
+├── tests
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-311.pyc
+│   │   ├── conftest.cpython-311-pytest-8.2.0.pyc
+│   │   ├── test_news.cpython-311-pytest-8.2.0.pyc
+│   │   ├── test_prices.cpython-311-pytest-8.2.0.pyc
+│   │   └── test_stocks.cpython-311-pytest-8.2.0.pyc
+│   ├── conftest.py
+│   ├── test_forecasts.py
+│   ├── test_news.py
+│   ├── test_prices.py
+│   └── test_stocks.py
+└── tree.txt
+
+318 directories, 1140 files
