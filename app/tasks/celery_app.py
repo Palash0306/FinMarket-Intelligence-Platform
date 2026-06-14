@@ -89,5 +89,10 @@ celery_app.conf.update(
             "task": "app.tasks.scheduled.run_embeddings",
             "schedule": crontab(minute=0, hour="*/1"),
         },
+        
+        "run_alert_check": {
+            "task": "app.tasks.scheduled.run_alert_check",
+            "schedule": crontab(minute="*/15"),
+        },
     }
 )

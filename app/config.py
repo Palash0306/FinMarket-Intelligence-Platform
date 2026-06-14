@@ -126,6 +126,9 @@ class Settings(BaseSettings):
     celery_broker_url: str = "redis://redis:6379/0"
     celery_result_backend: str = "redis://redis:6379/1"
 
+    # ── Email alerts (Phase 5) ────────────────────────────
+    ses_from_email: str = ""
+    ses_to_email:   str = ""
    
 
 

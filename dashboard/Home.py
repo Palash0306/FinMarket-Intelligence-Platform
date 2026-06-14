@@ -1,28 +1,6 @@
-# =========================================================
-# HOME PAGE — Market Overview
-# =========================================================
-#
-# What this page shows:
-# - System health status
-# - All 10 stocks watchlist with prices + sparklines
-# - ML signals (UP/DOWN) for each stock
-# - Recent anomaly alerts
-# - Quick stats
-#
-# This is the first page users see.
-# It gives a complete market snapshot at a glance.
-#
-# Connection chain:
-# api_client.py
-#   → GET /api/prices/         (all latest prices)
-#   → GET /api/forecasts/      (all signals)
-#   → GET /api/anomalies/      (recent alerts)
-#   → GET /health              (system status)
-# components/metrics.py → renders cards
-# components/charts.py  → renders sparklines
-
 import streamlit as st
 import pandas as pd
+import time
 from components.api_client import (
     get_all_stocks,
     get_all_prices,
@@ -31,13 +9,9 @@ from components.api_client import (
     get_health,
     get_price_history
 )
-from components.metrics import (
-    anomaly_card,
-    health_indicator
-)
+from components.metrics import anomaly_card, health_indicator
 from components.charts import mini_sparkline
 
-# ── Page config ───────────────────────────────────────────
 st.set_page_config(
     page_title="FinMarket Intelligence",
     page_icon="📈",
@@ -51,108 +25,145 @@ with st.sidebar:
     st.caption("Financial Intelligence Platform")
     st.divider()
 
-    # Health check
     health = get_health()
     health_indicator(health)
 
     st.divider()
-    st.caption("Built with FastAPI + Streamlit")
-    st.caption("ML: Prophet + XGBoost")
-    st.caption("AI: LangGraph + Groq LLaMA3")
+
+    # ── Auto-refresh toggle ───────────────────────────────
+    #
+    # st.session_state persists across reruns.
+    # When auto_refresh is on, page reloads every 60 seconds.
+    auto_refresh = st.toggle(
+        "Auto-refresh (60s)",
+        value=False,
+        help="Automatically refresh data every 60 seconds"
+    )
+
+    if auto_refresh:
+        st.caption("🔄 Refreshing every 60 seconds")
+
+    st.divider()
+    st.caption("**Stack**")
+    st.caption("FastAPI + Streamlit")
+    st.caption("Prophet + XGBoost")
+    st.caption("LangGraph + Groq LLaMA3")
+    st.caption("ClickHouse + pgvector")
+
+# ── Auto refresh logic ────────────────────────────────────
+if auto_refresh:
+    time.sleep(60)
+    st.cache_data.clear()
+    st.rerun()
 
 # ── Header ────────────────────────────────────────────────
-st.title("Market Overview")
-st.caption("Real-time data updated every 5 minutes")
+col_title, col_refresh = st.columns([4, 1])
+with col_title:
+    st.title("📊 Market Overview")
+    st.caption("Real-time data • Updated every 5 minutes by Celery")
 
-# ── Top metrics row ───────────────────────────────────────
-col1, col2, col3, col4 = st.columns(4)
+with col_refresh:
+    st.write("")
+    if st.button("🔄 Refresh", use_container_width=True):
+        st.cache_data.clear()
+        st.rerun()
 
-all_prices  = get_all_prices()
-all_signals = get_all_signals()
-all_anomalies = get_anomalies()
+# ── Fetch data ────────────────────────────────────────────
+with st.spinner("Loading market data..."):
+    all_prices    = get_all_prices()
+    all_signals   = get_all_signals()
+    all_anomalies = get_anomalies()
 
-# Count gainers and losers
-gainers = sum(
-    1 for p in all_prices
-    if p.get("close", 0) > 0
-)
+# ── Summary metrics ───────────────────────────────────────
+st.subheader("Market Summary")
+col1, col2, col3, col4, col5 = st.columns(5)
 
-high_anomalies = sum(
-    1 for a in all_anomalies
-    if a.get("severity") == "high"
-)
-
-up_signals = sum(
-    1 for s in all_signals
-    if s.get("signal") == "UP"
-)
+up_signals     = sum(1 for s in all_signals if s.get("signal") == "UP")
+down_signals   = sum(1 for s in all_signals if s.get("signal") == "DOWN")
+high_anomalies = sum(1 for a in all_anomalies if a.get("severity") == "high")
 
 with col1:
-    st.metric("Tracked Stocks", len(all_prices))
+    st.metric("Stocks Tracked", len(all_prices))
 with col2:
-    st.metric("Buy Signals", f"{up_signals}/{len(all_signals)}")
+    st.metric(
+        "Buy Signals ↑",
+        up_signals,
+        delta=f"of {len(all_signals)} signals"
+    )
 with col3:
-    st.metric("Active Alerts", high_anomalies,
-              delta="high severity" if high_anomalies > 0 else None,
-              delta_color="inverse")
+    st.metric(
+        "Sell Signals ↓",
+        down_signals,
+        delta=None
+    )
 with col4:
-    st.metric("Data Sources", "4",
-              help="yfinance, NewsAPI, RSS, Alpha Vantage")
+    st.metric(
+        "High Alerts 🚨",
+        high_anomalies,
+        delta="action needed" if high_anomalies > 0 else None,
+        delta_color="inverse"
+    )
+with col5:
+    from datetime import datetime
+    st.metric(
+        "Last Updated",
+        datetime.now().strftime("%H:%M:%S")
+    )
 
 st.divider()
 
-# ── Watchlist ─────────────────────────────────────────────
+# ── Watchlist table ───────────────────────────────────────
 st.subheader("Watchlist")
 
-# Build signal lookup dict
 signal_map = {s["symbol"]: s for s in all_signals}
 
 if not all_prices:
     st.warning(
-        "No price data available. "
-        "Make sure Docker is running and prices are seeded."
+        "⚠️ No price data found. "
+        "Make sure Docker is running: `docker compose up -d`"
     )
+    st.code("python scripts/seed_prices.py", language="bash")
 else:
-    # ── Display each stock in a row ───────────────────────
+    # ── Column headers ────────────────────────────────────
+    h1, h2, h3, h4, h5 = st.columns([2, 1.5, 1.5, 1.5, 2])
+    with h1: st.caption("**STOCK**")
+    with h2: st.caption("**PRICE**")
+    with h3: st.caption("**UPDATED**")
+    with h4: st.caption("**ML SIGNAL**")
+    with h5: st.caption("**7-DAY TREND**")
+
+    st.divider()
+
     for price_data in all_prices:
         symbol       = price_data["symbol"]
         close        = price_data.get("close", 0)
         company_name = price_data.get("company_name", symbol)
         timestamp    = str(price_data.get("timestamp", ""))[:10]
+        signal_data  = signal_map.get(symbol, {})
+        signal       = signal_data.get("signal", "—")
+        confidence   = signal_data.get("confidence", 0)
 
-        # Get ML signal for this symbol
-        signal_data = signal_map.get(symbol, {})
-        signal      = signal_data.get("signal", "—")
-        confidence  = signal_data.get("confidence", 0)
+        col1, col2, col3, col4, col5 = st.columns([2, 1.5, 1.5, 1.5, 2])
 
-        # Create row with columns
-        col_name, col_price, col_change, col_signal, col_chart = \
-            st.columns([2, 1.5, 1.5, 1.5, 2])
-
-        with col_name:
+        with col1:
             st.markdown(f"**{symbol}**")
-            st.caption(company_name)
+            st.caption(company_name[:30])
 
-        with col_price:
-            st.metric(
-                label="Price",
-                value=f"${close:.2f}",
-                label_visibility="collapsed"
-            )
+        with col2:
+            st.markdown(f"**${close:.2f}**")
 
-        with col_change:
-            st.caption(f"Updated: {timestamp}")
+        with col3:
+            st.caption(timestamp)
 
-        with col_signal:
+        with col4:
             if signal == "UP":
                 st.success(f"↑ {signal} {confidence:.0%}")
             elif signal == "DOWN":
                 st.error(f"↓ {signal} {confidence:.0%}")
             else:
-                st.caption("No signal")
+                st.caption("—")
 
-        with col_chart:
-            # Mini sparkline from recent prices
+        with col5:
             history = get_price_history(symbol, days=7)
             if history:
                 fig = mini_sparkline(history, symbol)
@@ -160,22 +171,28 @@ else:
                     st.plotly_chart(
                         fig,
                         use_container_width=True,
-                        config={"displayModeBar": False}
+                        config={"displayModeBar": False},
+                        key=f"spark_{symbol}"
                     )
 
         st.divider()
 
-# ── Recent Anomalies ──────────────────────────────────────
-st.subheader("Recent Alerts")
+# ── Anomaly feed ──────────────────────────────────────────
+st.subheader("🚨 Recent Alerts")
 
 if not all_anomalies:
-    st.success("✅ No anomalies detected recently")
+    st.success("✅ No anomalies detected — market looks normal")
 else:
-    for anomaly in all_anomalies[:5]:
-        anomaly_card(anomaly)
+    # Show high severity first
+    high = [a for a in all_anomalies if a.get("severity") == "high"]
+    med  = [a for a in all_anomalies if a.get("severity") == "medium"]
 
-    if len(all_anomalies) > 5:
-        st.caption(
-            f"+ {len(all_anomalies) - 5} more alerts. "
-            f"See the Anomalies page for full list."
-        )
+    if high:
+        st.error(f"🚨 {len(high)} HIGH severity anomaly detected")
+        for a in high[:3]:
+            anomaly_card(a)
+
+    if med:
+        with st.expander(f"⚠️ {len(med)} medium severity alerts"):
+            for a in med[:5]:
+                anomaly_card(a)

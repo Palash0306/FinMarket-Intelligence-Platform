@@ -323,3 +323,31 @@ def run_embeddings():
         extra={"embedded": result.get("embedded", 0)}
     )
     return result
+
+
+@celery_app.task(
+    name="app.tasks.scheduled.run_alert_check",
+    autoretry_for=(Exception,),
+    max_retries=3,
+    default_retry_delay=60
+)
+def run_alert_check():
+    """
+    Runs every 15 minutes alongside anomaly detection.
+
+    Connection chain:
+    Celery beat
+        ↓
+    alert_service.run_alert_check()
+        ↓ reads RDS anomalies where is_alerted=False
+        ↓ sends email via AWS SES
+        ↓ sets is_alerted=True
+    """
+    from app.services.alert_service import run_alert_check
+    logger.info("task_started: run_alert_check")
+    result = run_alert_check()
+    logger.info(
+        "task_completed: run_alert_check",
+        extra={"sent": result.get("sent", 0)}
+    )
+    return result
